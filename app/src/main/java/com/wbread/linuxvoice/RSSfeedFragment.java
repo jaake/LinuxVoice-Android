@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,7 +128,24 @@ public class RSSfeedFragment extends Fragment {
                             item.setDescription(rssItem.getDescription());
                             item.setLink(rssItem.getLink());
                             item.setTitle(rssItem.getTitle());
+                            item.setContent(rssItem.getContent());
                             item.setPubDate(rssItem.getPubDate().toString());
+
+                            Spanned S = Html.fromHtml(item.getDescription());
+
+                            String icon = null;
+
+                            try{
+                                ImageSpan[] is = (ImageSpan[]) S.getSpans(0,0,Class.forName("android.text.style.ImageSpan"));
+                                icon = is[0].getSource();
+                                item.setIcon_url(icon);
+
+                                String desc = S.toString().substring(1);
+                                item.setDescription(desc);
+
+                            }catch(ClassNotFoundException e){
+                            }
+
 
                             feedItems.add(item);
                         }

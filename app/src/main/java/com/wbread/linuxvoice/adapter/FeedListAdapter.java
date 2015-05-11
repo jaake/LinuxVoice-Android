@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
@@ -17,12 +19,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.wbread.linuxvoice.FeedImageView;
+import com.wbread.linuxvoice.NewsArticleActivity;
 import com.wbread.linuxvoice.R;
 import com.wbread.linuxvoice.app.AppController;
 import com.wbread.linuxvoice.data.FeedItem;
@@ -80,6 +84,7 @@ public class FeedListAdapter extends BaseAdapter {
 				.findViewById(R.id.profilePic);
         final ImageView ivPlayStop = (ImageView) convertView.findViewById(R.id.ivPlayStop);
         final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
+        LinearLayout llItem = (LinearLayout) convertView.findViewById(R.id.llItem);
 
 
         final Handler mHandler = new Handler()
@@ -113,7 +118,7 @@ public class FeedListAdapter extends BaseAdapter {
         };
 
 
-        FeedItem item = feedItems.get(position);
+        final FeedItem item = feedItems.get(position);
 
 		name.setText(item.getTitle());
 
@@ -144,6 +149,7 @@ public class FeedListAdapter extends BaseAdapter {
 			// url is null, remove from the view
 			url.setVisibility(View.GONE);
 		}
+        url.setVisibility(View.GONE);
 
         if (item.getEnclosure_url() != null) {
             final String audio_url = item.getEnclosure_url();
@@ -181,26 +187,20 @@ public class FeedListAdapter extends BaseAdapter {
 
 
             // user profile pic
-//		profilePic.setImageUrl(item.getProfilePic(), imageLoader);
+		profilePic.setImageUrl(item.getIcon_url(), imageLoader);
 
-		// Feed image
-/*		if (item.getImge() != null) {
-			feedImageView.setImageUrl(item.getImge(), imageLoader);
-			feedImageView.setVisibility(View.VISIBLE);
-			feedImageView
-					.setResponseObserver(new FeedImageView.ResponseObserver() {
-						@Override
-						public void onError() {
-						}
+        if(item.getContent()!=null){
+            llItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(activity.getApplicationContext(), NewsArticleActivity.class);
+                    intent.putExtra("ArticleContent", item.getContent());
+                    intent.putExtra("ArticleHeader", item.getTitle());
+                    activity.startActivity(intent);                    }
+            });
 
-						@Override
-						public void onSuccess() {
-						}
-					});
-		} else {
-			feedImageView.setVisibility(View.GONE);
-		}
-*/
+        }
+
 		return convertView;
 	}
 
