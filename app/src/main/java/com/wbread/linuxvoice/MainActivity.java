@@ -23,6 +23,7 @@ import android.widget.TextView;
 public class MainActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
         RSSfeedFragment.OnFragmentInteractionListener,
+        PDFlistFragment.OnFragmentInteractionListener,
         PodcastFeedFragment.OnFragmentInteractionListener
 {
 
@@ -66,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements
                 ft.replace(R.id.container, PodcastFeedFragment.newInstance("",""));
                 break;
             case 3:
-//                ft.replace(R.id.container, MatchListFragment.newInstance("",""));
+                ft.replace(R.id.container, PDFlistFragment.newInstance("",""));
                 break;
             case 4:
 //                ft.replace(R.id.container, VotePlayersFragment.newInstance("",""));

@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="C:\1\AS_project\LinuxVoice\sAXRSSReader\src\main\res"/><source path="C:\1\AS_project\LinuxVoice\sAXRSSReader\build\generated\res\rs\debug"/><source path="C:\1\AS_project\LinuxVoice\sAXRSSReader\build\generated\res\generated\debug"/></dataSet><dataSet config="debug"><source path="C:\1\AS_project\LinuxVoice\sAXRSSReader\src\debug\res"/></dataSet><mergedItems/></merger>

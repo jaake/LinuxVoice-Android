@@ -33,7 +33,7 @@ public class NewsArticleActivity extends ActionBarActivity {
         String articleHeader = int1.getStringExtra("ArticleHeader");
         String sHeader = "<h1 class=\"title single-title\">" + articleHeader + "</h1>";
 
-        articleContent = sHeader+articleContent;
+        articleContent = "<style>img{display: inline;height: auto;max-width: 100%;}</style>" + sHeader+articleContent;
 
 
         try{
