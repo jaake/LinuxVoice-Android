@@ -1,13 +1,16 @@
 package com.wbread.linuxvoice.adapter;
 
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
@@ -18,14 +21,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.wbread.linuxvoice.FeedImageView;
+import com.wbread.linuxvoice.MainActivity;
 import com.wbread.linuxvoice.NewsArticleActivity;
 import com.wbread.linuxvoice.R;
 import com.wbread.linuxvoice.app.AppController;
@@ -41,6 +49,25 @@ public class FeedListAdapter extends BaseAdapter {
 
     MediaPlayer mediaPlayer;
     private int playbackPosition=0;
+
+////////////////////////////////////////////
+
+    static class ViewHolderItem {
+        private Button b1,b2,b3,b4;
+        private double startTime = 0;
+        private double finalTime = 0;
+        private Handler myHandler = new Handler();;
+        private int forwardTime = 5000;
+        private int backwardTime = 5000;
+        private SeekBar seekbar;
+        private TextView tx1,tx2,tx3;
+
+        public static int oneTimeOnly = 0;
+    }
+
+////////////////////////////////////////////
+
+
 
     public FeedListAdapter(Activity activity, List<FeedItem> feedItems) {
 		this.activity = activity;
@@ -65,58 +92,33 @@ public class FeedListAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-		if (inflater == null)
-			inflater = (LayoutInflater) activity
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		if (convertView == null)
-			convertView = inflater.inflate(R.layout.feed_item, null);
+        ViewHolderItem viewHolder;
+
+        if (convertView == null){
+            if (inflater == null)
+                inflater = (LayoutInflater) activity
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null)
+                convertView = inflater.inflate(R.layout.feed_item, null);
+
+            viewHolder = new ViewHolderItem();
+//            viewHolder.b1 = (Button) convertView.findViewById(R.id.button);
+
+            convertView.setTag(viewHolder);
+        }else{
+            viewHolder = (ViewHolderItem) convertView.getTag();
+        }
+
 
 		if (imageLoader == null)
 			imageLoader = AppController.getInstance().getImageLoader();
 
 		TextView name = (TextView) convertView.findViewById(R.id.name);
-		TextView timestamp = (TextView) convertView
-				.findViewById(R.id.timestamp);
-		TextView statusMsg = (TextView) convertView
-				.findViewById(R.id.txtStatusMsg);
+		TextView timestamp = (TextView) convertView.findViewById(R.id.timestamp);
+		TextView statusMsg = (TextView) convertView.findViewById(R.id.txtStatusMsg);
 		TextView url = (TextView) convertView.findViewById(R.id.txtUrl);
-		NetworkImageView profilePic = (NetworkImageView) convertView
-				.findViewById(R.id.profilePic);
-        final ImageView ivPlayStop = (ImageView) convertView.findViewById(R.id.ivPlayStop);
-        final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
-        LinearLayout llItem = (LinearLayout) convertView.findViewById(R.id.llItem);
-
-
-        final Handler mHandler = new Handler()
-        {
-            @Override
-            public void handleMessage(Message msg)
-            {
-                int pos;
-                switch (msg.what)
-                {
-                    // ...
-
-                    case SHOW_PROGRESS:
-                        if(mediaPlayer!=null){
-                            progressBar.setMax(mediaPlayer.getDuration());
-                            progressBar.setProgress(mediaPlayer.getCurrentPosition());
-                            if (mediaPlayer.isPlaying())
-                            {
-                                msg = obtainMessage(SHOW_PROGRESS);
-                                sendMessageDelayed(msg, 1000);
-                            }
-                        }else{
-                            msg = obtainMessage(SHOW_PROGRESS);
-                            sendMessageDelayed(msg, 1000);
-                        }
-                        break;
-
-                    // ...
-                }
-            }
-        };
-
+		NetworkImageView profilePic = (NetworkImageView) convertView.findViewById(R.id.profilePic);
+        RelativeLayout llItem = (RelativeLayout) convertView.findViewById(R.id.llItem);
 
         final FeedItem item = feedItems.get(position);
 
@@ -151,40 +153,6 @@ public class FeedListAdapter extends BaseAdapter {
 		}
         url.setVisibility(View.GONE);
 
-        if (item.getEnclosure_url() != null) {
-            final String audio_url = item.getEnclosure_url();
-            ivPlayStop.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-
-            ivPlayStop.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    try{
-                        if(mediaPlayer != null && mediaPlayer.isPlaying()) {
-                            ivPlayStop.setImageResource(R.drawable.play_button);
-                            playbackPosition = mediaPlayer.getCurrentPosition();
-                            mediaPlayer.pause();
-                        }else{
-                            ivPlayStop.setImageResource(R.drawable.pause_button);
-                            playAudio(audio_url);
-                            mHandler.sendEmptyMessage(SHOW_PROGRESS);
-                        }
-
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-
-
-
-
-        }else{
-            ivPlayStop.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-        }
-
 
             // user profile pic
 		profilePic.setImageUrl(item.getIcon_url(), imageLoader);
@@ -193,7 +161,7 @@ public class FeedListAdapter extends BaseAdapter {
             llItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(activity.getApplicationContext(), NewsArticleActivity.class);
+                    Intent intent = new Intent(activity.getApplicationContext(), MainActivity.class);
                     intent.putExtra("ArticleContent", item.getContent());
                     intent.putExtra("ArticleHeader", item.getTitle());
                     activity.startActivity(intent);                    }
@@ -203,29 +171,5 @@ public class FeedListAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-
-
-    private void playAudio(String url) throws Exception
-    {
-        killMediaPlayer();
-
-        mediaPlayer = new MediaPlayer();
-
-        mediaPlayer.setDataSource(url);
-        mediaPlayer.prepare();
-        mediaPlayer.start();
-    }
-
-    private void killMediaPlayer() {
-        if(mediaPlayer!=null) {
-            try {
-                mediaPlayer.release();
-            }
-            catch(Exception e) {
-//                e.printStackTrace();
-            }
-        }
-    }
-
 
 }

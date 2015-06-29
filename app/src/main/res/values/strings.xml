@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">LinuxVoice</string>
 
-    <string name="title_section1">RSS Feed</string>
+    <string name="title_section1">News</string>
     <string name="title_section2">Podcast</string>
-    <string name="title_section3">PDF</string>
+    <string name="title_section3">Magazine</string>
     <string name="title_section4">Voice of the Masses</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

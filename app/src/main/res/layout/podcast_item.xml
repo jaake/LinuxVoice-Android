@@ -27,12 +27,13 @@
             android:paddingRight="@dimen/feed_item_padding_left_right"
             android:id="@+id/ll1">
 
-            <com.android.volley.toolbox.NetworkImageView
-                android:id="@+id/profilePic"
+            <ImageView
+                android:id="@+id/ivMainPlay"
+                android:src="@drawable/play_button"
                 android:layout_width="@dimen/feed_item_profile_pic"
                 android:layout_height="@dimen/feed_item_profile_pic"
                 android:scaleType="fitCenter" >
-            </com.android.volley.toolbox.NetworkImageView>
+            </ImageView>
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -76,6 +77,81 @@
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:textColorLink="@color/link" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/tvFinalTime"
+            android:background="#ff40ffe0"
+            android:layout_alignTop="@+id/tvStartTime"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/tvStartTime"
+            android:background="#ff2359ff"
+            android:layout_below="@+id/txtUrl"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:layout_below="@+id/tvStartTime"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:id="@+id/ivButtonRewind"
+            android:layout_below="@+id/seekBar"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/rewind" />
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:id="@+id/ivButtonPause"
+            android:src="@drawable/pause"
+            android:layout_below="@+id/seekBar"
+            android:layout_toLeftOf="@+id/imageView" />
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:id="@+id/ivButtonPlay"
+            android:src="@drawable/play"
+            android:layout_below="@+id/seekBar"
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView" />
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:id="@+id/ivButtonFastForward"
+            android:src="@drawable/fast_forward"
+            android:layout_below="@+id/seekBar"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_below="@+id/seekBar"
+            android:layout_centerHorizontal="true" />
+
 
     </RelativeLayout>
 

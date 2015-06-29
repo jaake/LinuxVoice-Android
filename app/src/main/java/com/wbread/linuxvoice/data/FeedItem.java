@@ -5,12 +5,13 @@ public class FeedItem {
 	private String enclosure_url;
     private String icon_url;
     private String content;
+	private boolean isPlaying;
 
 	public FeedItem() {
 	}
 
 	public FeedItem(String title, String description, String link, String pubDate, String enclosure_url,
-                    String icon_url, String content) {
+                    String icon_url, String content, boolean isPlaying) {
 		super();
 		this.title = title;
 		this.description = description;
@@ -19,6 +20,7 @@ public class FeedItem {
 		this.enclosure_url = enclosure_url;
         this.icon_url = icon_url;
         this.content = content;
+		this.isPlaying = isPlaying;
 	}
 
 
@@ -70,4 +72,11 @@ public class FeedItem {
     public void setContent(String content) {
         this.content = content;
     }
+
+	public boolean getIsPlaying() {
+		return isPlaying;
+	}
+	public void setIsPlaying(boolean isPlaying) {
+		this.isPlaying = isPlaying;
+	}
 }

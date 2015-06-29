@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.wbread.linuxvoice.adapter.FeedListAdapter;
+import com.wbread.linuxvoice.adapter.PodcastListAdapter;
 import com.wbread.linuxvoice.data.FeedItem;
 
 import org.xml.sax.SAXException;
@@ -79,7 +79,7 @@ public class PodcastFeedFragment extends Fragment {
     }
 
     private ListView listView;
-    private FeedListAdapter listAdapter;
+    private PodcastListAdapter listAdapter;
     private List<FeedItem> feedItems;
     MainActivity act = null;
 
@@ -93,7 +93,7 @@ public class PodcastFeedFragment extends Fragment {
 
         listView = (ListView) v.findViewById(R.id.list);
         feedItems = new ArrayList<FeedItem>();
-        listAdapter = new FeedListAdapter(act, feedItems);
+        listAdapter = new PodcastListAdapter(act, feedItems);
         listView.setAdapter(listAdapter);
 
         new Thread(new Runnable() {
@@ -141,6 +141,7 @@ public class PodcastFeedFragment extends Fragment {
                             item.setTitle(rssItem.getTitle());
                             item.setPubDate(rssItem.getPubDate().toString());
                             item.setEnclosure_url(rssItem.getEnclosure_url());
+                            item.setIsPlaying(false);
 
                             feedItems.add(item);
                         }
