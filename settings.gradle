@@ -1,2 +1,3 @@
 include ':sAXRSSReader'
+include ':android-support-v4-preferencefragment-master'
 include ':app'

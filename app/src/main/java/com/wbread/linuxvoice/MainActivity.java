@@ -1,8 +1,12 @@
 package com.wbread.linuxvoice;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.IBinder;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -20,12 +24,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.wbread.linuxvoice.service.LinuxVoiceService;
+
 
 public class MainActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
         RSSfeedFragment.OnFragmentInteractionListener,
         PDFlistFragment.OnFragmentInteractionListener,
         NewsArticleFragment.OnFragmentInteractionListener,
+        PrefFragment.OnFragmentInteractionListener,
         PodcastFeedFragment.OnFragmentInteractionListener
 {
 
@@ -44,6 +51,9 @@ public class MainActivity extends ActionBarActivity implements
     String articleContent = null;
     String articleHeader = null;
 
+    LinuxVoiceService lvs;
+    ServiceConnection sConn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +64,22 @@ public class MainActivity extends ActionBarActivity implements
 
         setContentView(R.layout.activity_main);
 
+        Intent intent = new Intent(this, LinuxVoiceService.class);
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+
+        sConn = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                lvs = ((LinuxVoiceService.LinuxVoiceBinder) binder).getService();
+            }
+            public void onServiceDisconnected(ComponentName name) {
+            }
+        };
+        bindService(intent, sConn, Context.BIND_AUTO_CREATE);
+        startService(intent);
+
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -68,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
 
         if(articleContent!=null && articleHeader!=null){
             position = -1;
@@ -91,6 +114,9 @@ public class MainActivity extends ActionBarActivity implements
                 break;
             case 4:
 //                ft.replace(R.id.container, VotePlayersFragment.newInstance("",""));
+                break;
+            case 5:
+                ft.replace(R.id.container, PrefFragment.newInstance("",""));
                 break;
         }
         ft.commitAllowingStateLoss();

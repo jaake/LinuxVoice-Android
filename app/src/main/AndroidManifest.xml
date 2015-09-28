@@ -3,6 +3,8 @@
     package="com.wbread.linuxvoice" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".app.AppController"
@@ -23,6 +25,31 @@
             android:name=".NewsArticleActivity"
             android:label="@string/title_activity_news_article" >
         </activity>
+        <service
+            android:name=".service.LinuxVoiceService"
+            android:enabled="true">
+        </service>
+        <receiver
+            android:name=".service.NewsUpdateListener"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".service.PodcastUpdateListener"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
+        <receiver
+            android:name=".service.PDFListUpdateListener"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
+
+
+
     </application>
 
 </manifest>

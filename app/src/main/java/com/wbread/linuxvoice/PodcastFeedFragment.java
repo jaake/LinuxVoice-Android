@@ -1,8 +1,10 @@
 package com.wbread.linuxvoice;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ListView;
 
 import com.wbread.linuxvoice.adapter.PodcastListAdapter;
 import com.wbread.linuxvoice.data.FeedItem;
+import com.wbread.linuxvoice.utils.AppUtils;
 
 import org.xml.sax.SAXException;
 
@@ -38,8 +41,6 @@ public class PodcastFeedFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    private String URL_PODCAST_FEED = "http://www.linuxvoice.com/podcast_ogg.rss";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -82,6 +83,7 @@ public class PodcastFeedFragment extends Fragment {
     private PodcastListAdapter listAdapter;
     private List<FeedItem> feedItems;
     MainActivity act = null;
+    SharedPreferences sPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,6 +93,8 @@ public class PodcastFeedFragment extends Fragment {
 
         act = (MainActivity) getActivity();
 
+        sPref = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext());
+
         listView = (ListView) v.findViewById(R.id.list);
         feedItems = new ArrayList<FeedItem>();
         listAdapter = new PodcastListAdapter(act, feedItems);
@@ -98,18 +102,23 @@ public class PodcastFeedFragment extends Fragment {
 
         new Thread(new Runnable() {
             public void run() {
-                ReadRss();
+                AppUtils.ReadPodcast(feedItems);
+
+                if(feedItems.size()>0){
+                    AppUtils.saveLastPodcastUpdate(feedItems.get(0).getPubDate(),sPref);
+
+                    act.runOnUiThread(new Runnable() {
+                        public void run() {
+                            listAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+
+
             }
         }).start();
 
         return v;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -123,46 +132,6 @@ public class PodcastFeedFragment extends Fragment {
         }
     }
 
-    private void ReadRss() {
-
-        try {
-            try {
-                try {
-                    URL url = new URL(URL_PODCAST_FEED);
-                    RssFeed feed = RssReader.read(url);
-
-                    if (feed != null) {
-                        ArrayList<RssItem> rssItems = feed.getRssItems();
-                        for (RssItem rssItem : rssItems) {
-                            FeedItem item = new FeedItem();
-
-                            item.setDescription(rssItem.getDescription());
-                            item.setLink(rssItem.getLink());
-                            item.setTitle(rssItem.getTitle());
-                            item.setPubDate(rssItem.getPubDate().toString());
-                            item.setEnclosure_url(rssItem.getEnclosure_url());
-                            item.setIsPlaying(false);
-
-                            feedItems.add(item);
-                        }
-
-                        act.runOnUiThread(new Runnable() {
-                            public void run() {
-                                listAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            } catch (SAXException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onDetach() {

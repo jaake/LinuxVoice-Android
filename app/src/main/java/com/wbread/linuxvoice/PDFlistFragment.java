@@ -1,8 +1,10 @@
 package com.wbread.linuxvoice;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
@@ -14,6 +16,7 @@ import android.widget.ListView;
 
 import com.wbread.linuxvoice.adapter.FeedListAdapter;
 import com.wbread.linuxvoice.data.FeedItem;
+import com.wbread.linuxvoice.utils.AppUtils;
 
 import org.xml.sax.SAXException;
 
@@ -41,8 +44,6 @@ public class PDFlistFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    private String URL_FEED = "http://www.linuxvoice.com/feed/?cat=33";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -85,6 +86,7 @@ public class PDFlistFragment extends Fragment {
     private FeedListAdapter listAdapter;
     private List<FeedItem> feedItems;
     MainActivity act = null;
+    SharedPreferences sPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,6 +96,8 @@ public class PDFlistFragment extends Fragment {
 
         act = (MainActivity) getActivity();
 
+        sPref = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext());
+
         listView = (ListView) v.findViewById(R.id.list);
         feedItems = new ArrayList<FeedItem>();
         listAdapter = new FeedListAdapter(act, feedItems);
@@ -101,76 +105,22 @@ public class PDFlistFragment extends Fragment {
 
         new Thread(new Runnable() {
             public void run() {
-                ReadPDFlist();
+                AppUtils.ReadPDFlist(feedItems);
+
+                if(feedItems.size()>0){
+                    AppUtils.saveLastPDFListUpdate(feedItems.get(0).getPubDate(),sPref);
+
+                    act.runOnUiThread(new Runnable() {
+                        public void run() {
+                            listAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
         }).start();
 
 
         return v;
-    }
-
-
-    private void ReadPDFlist(){
-
-        try {
-            try {
-                try {
-                    URL url = new URL(URL_FEED);
-                    RssFeed feed = RssReader.read(url);
-
-                    if(feed!=null){
-                        ArrayList<RssItem> rssItems = feed.getRssItems();
-                        for(RssItem rssItem : rssItems) {
-                            FeedItem item = new FeedItem();
-
-                            item.setDescription(rssItem.getDescription());
-                            item.setLink(rssItem.getLink());
-                            item.setTitle(rssItem.getTitle());
-
-                            String content = rssItem.getContent().replaceAll("href=\"/", "href=\"http://www.linuxvoice.com/");
-                            item.setContent(content);
-
-                            item.setPubDate(rssItem.getPubDate().toString());
-
-                            Spanned S = Html.fromHtml(item.getDescription());
-
-                            String icon = null;
-
-                            try{
-                                ImageSpan[] is = (ImageSpan[]) S.getSpans(0,0,Class.forName("android.text.style.ImageSpan"));
-                                icon = is[0].getSource();
-                                item.setIcon_url(icon);
-
-                                String desc = S.toString().substring(1);
-                                item.setDescription(desc);
-
-                            }catch(ClassNotFoundException e){
-                            }
-
-
-
-                            feedItems.add(item);
-                        }
-
-                        act.runOnUiThread(new Runnable() {
-                            public void run() {
-                                listAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            } catch (SAXException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
     }
 
     @Override

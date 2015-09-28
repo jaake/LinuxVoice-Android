@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="LinuxVoice settings"
+        android:key="Settings">
+    <SwitchPreference
+        android:key="get_rss_notification"
+        android:defaultValue="true"
+        android:summaryOff="Don't get new RSS notification"
+        android:summaryOn="Get new RSS notification"
+        android:switchTextOff="Off"
+        android:switchTextOn="On" />
+    <SwitchPreference
+        android:key="get_podcast_notification"
+        android:defaultValue="true"
+        android:summaryOff="Don't get new podcast notification"
+        android:summaryOn="Get new podcast notification"
+        android:switchTextOff="Off"
+        android:switchTextOn="On" />
+    <SwitchPreference
+        android:key="get_magazine_notification"
+        android:defaultValue="true"
+        android:summaryOff="Don't get new magazine notification"
+        android:summaryOn="Get new magazine notification"
+        android:switchTextOff="Off"
+        android:switchTextOn="On" />
+</PreferenceScreen>
